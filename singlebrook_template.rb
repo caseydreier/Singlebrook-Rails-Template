@@ -182,7 +182,7 @@ file 'app/helpers/layout_helper.rb',
 # to do so you may need to add this line to your ApplicationController
 #   helper :layout or helper :all
 module LayoutHelper
-  def title(page_title)
+  def page_title(page_title)
     content_for(:page_title) { page_title.to_s }
   end
 
@@ -235,10 +235,12 @@ file 'app/controllers/application_controller.rb',
   # Uncomment this to filter the contents of submitted sensitive data parameters
   # from your application log (in this case, all fields with names like "password"). 
   filter_parameter_logging :password, :confirm_password, :password_confirmation, :creditcard
-
   
   # Catch any Error404 exceptions and trigger a 404 page to render
   rescue_from Error404, :with => :render_404
+  
+  # make methods available to views
+  helper_method :logged_in?, :admin_logged_in?, :current_user_session, :current_user
   
   # Authlogic methods
   def logged_in?
@@ -294,6 +296,82 @@ private
     session[:return_to] = nil
   end
 end
+}
+
+generate 'sessions', 'user_session'
+run "script/generate model User --skip-fixture --skip-migration"
+file 'app/models/user.rb',
+%q{class User < ActiveRecord::Base
+  acts_as_authentic # for available options see documentation in: Authlogic::ActsAsAuthentic
+end
+}
+
+file 'db/migrate/20100625202151_create_users.rb',
+%q{class CreateUsers < ActiveRecord::Migration
+  def self.up
+    create_table :users do |t|
+      t.string    :login,               :null => false                # optional, you can use email instead, or both
+      t.string    :email,               :null => false                # optional, you can use login instead, or both
+      t.string    :crypted_password,    :null => false                # optional, see below
+      t.string    :password_salt,       :null => false                # optional, but highly recommended
+      t.string    :persistence_token,   :null => false                # required
+      t.string    :single_access_token, :null => false                # optional, see Authlogic::Session::Params
+      t.string    :perishable_token,    :null => false                # optional, see Authlogic::Session::Perishability
+
+      # Magic columns, just like ActiveRecord's created_at and updated_at. These are automatically maintained by Authlogic if they are present.
+      t.integer   :login_count,         :null => false, :default => 0 # optional, see Authlogic::Session::MagicColumns
+      t.integer   :failed_login_count,  :null => false, :default => 0 # optional, see Authlogic::Session::MagicColumns
+      t.datetime  :last_request_at                                    # optional, see Authlogic::Session::MagicColumns
+      t.datetime  :current_login_at                                   # optional, see Authlogic::Session::MagicColumns
+      t.datetime  :last_login_at                                      # optional, see Authlogic::Session::MagicColumns
+      t.string    :current_login_ip                                   # optional, see Authlogic::Session::MagicColumns
+      t.string    :last_login_ip                                      # optional, see Authlogic::Session::MagicColumns
+      t.timestamps
+    end
+  end
+
+  def self.down
+    drop_table :users
+  end
+end  
+}
+
+file 'app/controllers/user_sessions_controller.rb',
+%q{class UserSessionsController < ApplicationController
+  def new
+    @user_session = UserSession.new
+  end
+
+  def create
+    @user_session = UserSession.new(params[:user_session])
+    if @user_session.save
+      redirect_to account_url
+    else
+      render :action => :new
+    end
+  end
+
+  def destroy
+    current_user_session.destroy
+    redirect_to new_user_session_url
+  end
+end
+}
+
+file 'app/views/user_sessions/new.html.erb',
+%q{<% page_title 'Login' -%>
+<h1>Login</h1>
+
+<% form_for @user_session do |f| %>
+  <%= f.error_messages %>
+  <%= f.label :login %><br />
+  <%= f.text_field :login %><br />
+  <br />
+  <%= f.label :password %><br />
+  <%= f.password_field :password %><br />
+  <br />
+  <%= f.submit "Login" %>
+<% end %>
 }
 
 # ==========================
