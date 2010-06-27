@@ -80,6 +80,15 @@ if $0 == 'irb'
 end
 }
 
+# ==========
+# = Routes =
+# ==========
+
+# Routes for Authlogic
+route "map.resource :user_sessions"
+route 'map.login "/login", :controller => "user_sessions", :action => "new"'
+route 'map.logout "/logout", :controller => "user_sessions", :action => "destroy"'
+
 # ========
 # = Gems =
 # ========
@@ -176,6 +185,9 @@ load 'config/deploy'
 # = Application =
 # ===============
 
+# Generate Authlogic user session model
+generate("session", "user_session") 
+
 file 'app/helpers/layout_helper.rb', 
 %q{# These helper methods can be called in your template to set variables to be used in the layout
 # This module should be included in all views globally,
@@ -227,6 +239,7 @@ file 'app/controllers/application_controller.rb',
 %q{class ApplicationController < ActionController::Base
   # Exception Notification for app.
   include ExceptionNotification::Notifiable
+  include Authlogic::ApplicationControllerMethods # custom lib
   
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
@@ -239,66 +252,24 @@ file 'app/controllers/application_controller.rb',
   # Catch any Error404 exceptions and trigger a 404 page to render
   rescue_from Error404, :with => :render_404
   
-  # make methods available to views
+  # make some authlogic methods available to views
   helper_method :logged_in?, :admin_logged_in?, :current_user_session, :current_user
   
-  # Authlogic methods
-  def logged_in?
-    !current_user_session.nil?
-  end
-
-  def admin_required
-    unless current_user && current_user.admin?
-      flash[:error] = "Sorry, you don't have access to that."
-      redirect_to root_url and return false
+  
+  # Return a 404 in the HTTP headers and optionally render 404 not found page if the
+  # request was for HTML.
+  def render_404
+    respond_to do |format|
+      format.html { render :file => "#{File.join(Rails.root,'public','404.html')}", :status => 404 }
+      format.all  { render :nothing => true, :status => 404 }
     end
+    true
   end
-
-  def admin_logged_in?
-    logged_in? && current_user.admin?
-  end
-
-private
-  def current_user_session
-    return @current_user_session if defined?(@current_user_session)
-    @current_user_session = UserSession.find
-  end
-
-  def current_user
-    return @current_user if defined?(@current_user)
-    @current_user = current_user_session && current_user_session.user
-  end
-
-  def require_user
-    unless current_user
-      store_location
-      flash[:notice] = "You must be logged in to access this page"
-      redirect_to new_user_session_url
-      return false
-    end
-  end
-
-  def require_no_user
-    if current_user
-      store_location
-      flash[:notice] = "You must be logged out to access this page"
-      redirect_to account_url
-      return false
-    end
-  end
-
-  def store_location
-    session[:return_to] = request.request_uri
-  end
-
-  def redirect_back_or_default(default)
-    redirect_to(session[:return_to] || default)
-    session[:return_to] = nil
-  end
+  
+  
 end
 }
 
-generate 'sessions', 'user_session'
 run "script/generate model User --skip-fixture --skip-migration"
 file 'app/models/user.rb',
 %q{class User < ActiveRecord::Base
@@ -374,6 +345,65 @@ file 'app/views/user_sessions/new.html.erb',
 <% end %>
 }
 
+file 'lib/authlogic/application_controller_methods.rb',
+%q{module Authlogic
+  module ApplicationControllerMethods
+    def logged_in?
+      !current_user_session.nil?
+    end
+
+    def admin_required
+      unless current_user && current_user.admin?
+        flash[:error] = "Sorry, you don't have access to that."
+        redirect_to root_url and return false
+      end
+    end
+
+    def admin_logged_in?
+      logged_in? && current_user.admin?
+    end
+
+  private
+    def current_user_session
+      return @current_user_session if defined?(@current_user_session)
+      @current_user_session = UserSession.find
+    end
+
+    def current_user
+      return @current_user if defined?(@current_user)
+      @current_user = current_user_session && current_user_session.user
+    end
+
+    def require_user
+      unless current_user
+        store_location
+        flash[:notice] = "You must be logged in to access this page"
+        redirect_to new_user_session_url
+        return false
+      end
+    end
+
+    def require_no_user
+      if current_user
+        store_location
+        flash[:notice] = "You must be logged out to access this page"
+        redirect_to account_url
+        return false
+      end
+    end
+
+    def store_location
+      session[:return_to] = request.request_uri
+    end
+
+    def redirect_back_or_default(default)
+      redirect_to(session[:return_to] || default)
+      session[:return_to] = nil
+    end
+  end
+end 
+}
+
 # ==========================
 # = Testing-releated Files =
 # ==========================
@@ -426,4 +456,4 @@ end
 
 # Final install steps
 rake('gems:install', :sudo => true)
-rake('db:migrate')
+rake('db:migrate') if yes?("Would you like to run migrations? (yes/no)")
