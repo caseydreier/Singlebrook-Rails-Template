@@ -24,3 +24,9 @@ What it does is the following:
 * Generates User model and a migration with all the authlogic fields
 * Loads gems
 * Executes migration (asks first)
+
+This templates assumes you have the following components setup in your system:
+
+* Capistrano
+* Capistrano Multideployment Gem
+* Git
