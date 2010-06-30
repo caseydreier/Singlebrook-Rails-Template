@@ -128,6 +128,7 @@ set :tags_repository,  "https://svn.singlebrook.com/svn/missionmarkets/#{current
 set :scm, :subversion
 set :scm_username, ""
 set :scm_password, ""
+set :deploy_via, :remote_cache
 
 # Customise the deployment
 set :tag_on_deploy, false # turn off deployment tagging, we have our own tagging strategy
