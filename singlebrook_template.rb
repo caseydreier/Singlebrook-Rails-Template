@@ -282,6 +282,8 @@ file 'db/migrate/20100625202151_create_users.rb',
     create_table :users do |t|
       t.string    :login,               :null => false                # optional, you can use email instead, or both
       t.string    :email,               :null => false                # optional, you can use login instead, or both
+      t.string    :first_name
+      t.string    :last_name
       t.string    :crypted_password,    :null => false                # optional, see below
       t.string    :password_salt,       :null => false                # optional, but highly recommended
       t.string    :persistence_token,   :null => false                # required
@@ -449,6 +451,23 @@ end
 class ActionController::TestCase
   setup :activate_authlogic
 end
+}
+
+# User Factory
+file 'test/factories/users.rb',
+%q{# Factory.define :user do |f|
+  # f.sequence(:email)      {|n| "joey#{n}@aol.com"}
+  # f.sequence(:login)      {|n| "joeyl337#{n}"}
+  # f.first_name            'Joey Joe Joe'
+  # f.last_name             'Johnson Jr.'
+  # f.password              '123123'
+  # f.password_confirmation '123123'
+  # f.password_salt         { Authlogic::Random.hex_token} 
+  # f.crypted_password      { Authlogic::CryptoProviders::Sha512.encrypt("sb" + salt) }
+  # f.persistence_token     { Authlogic::Random.hex_token }
+  # f.single_access_token   { Authlogic::Random.friendly_token }
+  # f.perishable_token      { Authlogic::Random.friendly_token }
+# end
 }
 
 # Final install steps
