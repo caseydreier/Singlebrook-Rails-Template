@@ -30,6 +30,7 @@ log/*.log
 tmp/**/*
 config/database.yml
 db/*.sqlite3
+tmp/restart.txt
 END
 
 
