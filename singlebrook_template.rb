@@ -438,6 +438,12 @@ class ActiveSupport::TestCase
     domain = host.split('.').last(2).join('.')
     ActionController::TestRequest.any_instance.stubs(:domain).returns(domain)
   end
+
+  # Helper method to login users for our functional tests.
+  def login_as(user_obj)
+    UserSession.create(user_obj)
+  end
+
 end
 
 class ActionController::TestCase
@@ -446,5 +452,5 @@ end
 }
 
 # Final install steps
-rake('gems:install', :sudo => true)
+rake('gems:install', :sudo => true) if yes?("Would you like to run rake gems:install? (yes/no)")
 rake('db:migrate') if yes?("Would you like to run migrations? (yes/no)")
