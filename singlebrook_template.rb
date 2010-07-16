@@ -85,8 +85,8 @@ end
 # ==========
 
 # Routes for Authlogic
-route "map.resource :user_sessions"
-route 'map.login "/login", :controller => "user_sessions", :action => "new"'
+route "map.resource :user_sessions, :only => [:new, :create, :destroy]"
+route 'map.login "/login",   :controller => "user_sessions", :action => "new"'
 route 'map.logout "/logout", :controller => "user_sessions", :action => "destroy"'
 
 # ========
@@ -245,16 +245,14 @@ file 'app/controllers/application_controller.rb',
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
 
-  # See ActionController::Base for details 
-  # Uncomment this to filter the contents of submitted sensitive data parameters
-  # from your application log (in this case, all fields with names like "password"). 
+  # Filter out sensitive information from our logs
   filter_parameter_logging :password, :confirm_password, :password_confirmation, :creditcard
   
   # Catch any Error404 exceptions and trigger a 404 page to render
   rescue_from Error404, :with => :render_404
   
   # make some authlogic methods available to views
-  helper_method :logged_in?, :admin_logged_in?, :current_user_session, :current_user
+  helper_method :logged_in?, :current_user_session, :current_user
   
   
   # Return a 404 in the HTTP headers and optionally render 404 not found page if the
@@ -310,6 +308,9 @@ end
 
 file 'app/controllers/user_sessions_controller.rb',
 %q{class UserSessionsController < ApplicationController
+  before_filter :require_no_user, :only => [:new, :create]
+  before_filter :require_user, :only => :destroy
+    
   def new
     @user_session = UserSession.new
   end
@@ -351,17 +352,6 @@ file 'lib/authlogic/application_controller_methods.rb',
   module ApplicationControllerMethods
     def logged_in?
       !current_user_session.nil?
-    end
-
-    def admin_required
-      unless current_user && current_user.admin?
-        flash[:error] = "Sorry, you don't have access to that."
-        redirect_to root_url and return false
-      end
-    end
-
-    def admin_logged_in?
-      logged_in? && current_user.admin?
     end
 
   private
