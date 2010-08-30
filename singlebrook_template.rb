@@ -13,7 +13,7 @@ run "rm public/images/rails.png"
 run "touch public/stylesheets/screen.css"
 
 # remove prototype js
-run "rm -f public/javascripts/*" 
+run "rm -f public/javascripts/*"
 
 # Download JQuery
 run "curl -s -L http://code.jquery.com/jquery-1.4.2.min.js > public/javascripts/jquery.js"
@@ -39,13 +39,13 @@ END
 # ================
 
 # Create Custom Exception for 404s in initializers
-initializer 'custom_exceptions.rb', 
+initializer 'custom_exceptions.rb',
 %q{# Custom 404 Error class
   class Error404 < StandardError; end;
 }
 
 # Reset default time formats
-initializer 'time_formats.rb', 
+initializer 'time_formats.rb',
 %q{# Example time formats
 { :short_date => "%x", :long_date => "%a, %b %d, %Y" }.each do |k, v|
   ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.update(k => v)
@@ -144,7 +144,7 @@ server "", :app, :web, :db, :primary => true
 # directories to preserve between deployments
 # set :asset_directories, ['public/assets']
 
-# re-linking for config files on public repos  
+# re-linking for config files on public repos
 # namespace :deploy do
 #   desc "Re-link config files"
 #   task :link_config, :roles => :app do
@@ -158,7 +158,7 @@ namespace :deploy do
     run "\#{try_sudo} touch \#{File.join(current_path,'tmp','restart.txt')}"
   end
 end
-    
+
 END
 
 file 'config/deploy/production.rb', <<-END
@@ -188,9 +188,9 @@ load 'config/deploy'
 # ===============
 
 # Generate Authlogic user session model
-generate("session", "user_session") 
+generate("session", "user_session")
 
-file 'app/helpers/layout_helper.rb', 
+file 'app/helpers/layout_helper.rb',
 %q{# These helper methods can be called in your template to set variables to be used in the layout
 # This module should be included in all views globally,
 # to do so you may need to add this line to your ApplicationController
@@ -203,7 +203,7 @@ module LayoutHelper
   def stylesheet(*args)
     content_for(:head) { stylesheet_link_tag(*args) }
   end
-  
+
   def javascript(*args)
     content_for(:head) { javascript_include_tag(*args) }
   end
@@ -211,8 +211,8 @@ end
 
 }
 
-file 'app/views/layouts/application.html.erb', 
-%q{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+file 'app/views/layouts/application.html.erb',
+%q{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
@@ -229,7 +229,7 @@ file 'app/views/layouts/application.html.erb',
 </html>
 }
 
-file 'app/views/layouts/_flashes.html.erb', 
+file 'app/views/layouts/_flashes.html.erb',
 %q{<div id="flash">
   <% flash.each do |key, value| -%>
     <div id="flash_<%= key %>"><%=h value %></div>
@@ -242,20 +242,20 @@ file 'app/controllers/application_controller.rb',
   # Exception Notification for app.
   include ExceptionNotification::Notifiable
   include Authlogic::ApplicationControllerMethods # custom lib
-  
+
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
 
   # Filter out sensitive information from our logs
   filter_parameter_logging :password, :confirm_password, :password_confirmation, :creditcard
-  
+
   # Catch any Error404 exceptions and trigger a 404 page to render
   rescue_from Error404, :with => :render_404
-  
+
   # make some authlogic methods available to views
   helper_method :logged_in?, :current_user_session, :current_user
-  
-  
+
+
   # Return a 404 in the HTTP headers and optionally render 404 not found page if the
   # request was for HTML.
   def render_404
@@ -265,8 +265,8 @@ file 'app/controllers/application_controller.rb',
     end
     true
   end
-  
-  
+
+
 end
 }
 
@@ -306,14 +306,14 @@ file 'db/migrate/20100625202151_create_users.rb',
   def self.down
     drop_table :users
   end
-end  
+end
 }
 
 file 'app/controllers/user_sessions_controller.rb',
 %q{class UserSessionsController < ApplicationController
   before_filter :require_no_user, :only => [:new, :create]
   before_filter :require_user, :only => :destroy
-    
+
   def new
     @user_session = UserSession.new
   end
@@ -395,7 +395,7 @@ file 'lib/authlogic/application_controller_methods.rb',
       session[:return_to] = nil
     end
   end
-end 
+end
 }
 
 # ==========================
@@ -410,29 +410,29 @@ require 'mocha'
 require 'authlogic/test_case'
 
 class ActiveSupport::TestCase
-  
+
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures  = false
 
   # Add more helper methods to be used by all tests here...
-  
+
   # This is the opposite of "assert", but it reads a little nicer.
   def deny(*args)
     !assert(args)
   end
-  
+
   # Asserts a specific layout in a functional test
   def assert_layout(layout)
     assert_equal layout, @response.layout
   end
-  
+
   # Assert that a specified route does not exist
   def assert_not_routing(path, options, defaults={}, extras={}, message=nil)
     assert_raise ActionController::RoutingError do
       assert_routing(path, options, defaults, extras, message)
     end
   end
-  
+
   # Helper Method for setting the requesting host
   # Mocks the proper response for the domain() method, as well as the
   # @request.host value.
@@ -463,7 +463,7 @@ file 'test/factories/users.rb',
   # f.last_name             'Johnson Jr.'
   # f.password              '123123'
   # f.password_confirmation '123123'
-  # f.password_salt         { Authlogic::Random.hex_token} 
+  # f.password_salt         { Authlogic::Random.hex_token}
   # f.crypted_password      { Authlogic::CryptoProviders::Sha512.encrypt("sb" + salt) }
   # f.persistence_token     { Authlogic::Random.hex_token }
   # f.single_access_token   { Authlogic::Random.friendly_token }
