@@ -86,7 +86,7 @@ end
 # ==========
 
 # Routes for Authlogic
-route "map.resource :user_sessions, :only => [:new, :create, :destroy]"
+route "map.resources :user_sessions, :only => [:new, :create, :destroy]"
 route 'map.login "/login",   :controller => "user_sessions", :action => "new"'
 route 'map.logout "/logout", :controller => "user_sessions", :action => "destroy"'
 
