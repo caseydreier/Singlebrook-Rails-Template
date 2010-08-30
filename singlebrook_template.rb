@@ -99,7 +99,7 @@ gem 'factory_girl', :version => "1.2.4"
 gem 'mocha'
 
 # Pagination
-gem 'will_paginate', :version => '~> 2.3.11'
+gem 'will_paginate', :version => '~> 2.3.14'
 
 # Exception Handling
 gem 'exception_notification', :version => '2.3.3'
@@ -107,12 +107,16 @@ gem 'exception_notification', :version => '2.3.3'
 # Authentication
 gem 'authlogic', :version => '~> 2.1.5'
 
+# Erubis ERB rendering engine for Rails XSS plugin
+gem 'erubis'
+
 # ===========
 # = Plugins =
 # ===========
 
 plugin 'jrails', :git => "git://github.com/aaronchi/jrails.git"
 plugin 'validates_timeliness', :git => 'git://github.com/adzap/validates_timeliness.git'
+plugin 'rails_xss', :git => 'git://github.com/rails/rails_xss.git'
 
 # ====================
 # = Capistrano Setup =
