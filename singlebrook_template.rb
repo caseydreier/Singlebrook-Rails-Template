@@ -110,6 +110,10 @@ gem 'authlogic', :version => '~> 2.1.5'
 # Erubis ERB rendering engine for Rails XSS plugin
 gem 'erubis'
 
+# HAML by default!
+gem 'haml'
+
+
 # ===========
 # = Plugins =
 # ===========
