@@ -130,11 +130,15 @@ plugin 'rails_xss', :git => 'git://github.com/rails/rails_xss.git'
 capify!
 
 file 'config/deploy.rb', <<-END
-set :application, "#{current_app_name}"
-set :repository,  "https://svn.singlebrook.com/svn/missionmarkets/#{current_app_name}/trunk"
-set :tags_repository,  "https://svn.singlebrook.com/svn/missionmarkets/#{current_app_name}/tags"
+set :stages, %w(staging production)
+set :default_stage, "staging"
 
-set :scm, :subversion
+require 'capistrano/ext/multistage'
+
+set :application, "#{current_app_name}"
+set :repository,  "http://git.singlebrook.com/git/#{current_app_name}"
+
+set :scm, :git
 set :scm_username, ""
 set :scm_password, ""
 set :deploy_via, :remote_cache
@@ -150,20 +154,29 @@ set :use_sudo, false
 server "", :app, :web, :db, :primary => true
 
 # directories to preserve between deployments
-# set :asset_directories, ['public/assets']
+set :asset_directories, ['public/assets']
 
 # re-linking for config files on public repos
-# namespace :deploy do
-#   desc "Re-link config files"
-#   task :link_config, :roles => :app do
-#     run "ln -nsf \#{shared_path}/config/database.yml \#{current_path}/config/database.yml"
-#   end
-
 namespace :deploy do
   task :start do ; end
   task :stop do ; end
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "\#{try_sudo} touch \#{File.join(current_path,'tmp','restart.txt')}"
+    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
+  end
+
+  desc "Re-link config files"
+  task :link_config_files, :roles => :app do
+    run "ln -nsf #{config_path}/database.yml #{release_path}/config/database.yml"
+  end
+
+  after "deploy:update_code", "deploy:link_config_files"
+
+end
+
+namespace :gems do
+  desc "Install gems"
+  task :install, :roles => :app do
+    run "cd #{current_path} && #{try_sudo} rake gems:install RAILS_ENV=#{rails_env}"
   end
 end
 
@@ -183,9 +196,6 @@ END
 file 'Capfile',
 %q{load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 Dir['vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
-set :stages, %w(staging production)
-set :default_stage, "staging"
-require 'capistrano/ext/multistage'
 
 load 'config/deploy'
 
