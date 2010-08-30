@@ -1,5 +1,5 @@
 # Singlebrook Rails Template
-# v 0.0.1 by Casey Dreier
+# v 0.1.0 by Casey Dreier
 
 current_app_name = File.basename(File.expand_path(root))
 
