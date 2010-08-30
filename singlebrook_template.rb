@@ -219,30 +219,25 @@ end
 
 }
 
-file 'app/views/layouts/application.html.erb',
-%q{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title><%= yield :page_title %></title>
-    <%= stylesheet_link_tag 'screen', :media => 'all', :cache => true %>
-    <%= javascript_include_tag :defaults, :cache => true %>
-    <%= yield :head -%>
-  </head>
-  <body>
-    <%= render :partial => 'layouts/flashes' -%>
-    <%= yield %>
-  </body>
-</html>
+file 'app/views/layouts/application.html.haml',
+%q{!!!
+%html
+  %head
+    %title
+      = yield :page_title
+    = stylesheet_link_tag 'screen', :media => 'all', :cache => true
+    = javascript_include_tag :defaults, :cache => true
+    = yield :head
+  %body
+    = render :partial => 'layouts/flashes'
+    = yield
 }
 
-file 'app/views/layouts/_flashes.html.erb',
-%q{<div id="flash">
-  <% flash.each do |key, value| -%>
-    <div id="flash_<%= key %>"><%=h value %></div>
-  <% end -%>
-</div>
+file 'app/views/layouts/_flashes.html.haml',
+%q{#flash
+  - flash.each do |key,value|
+    %div{:id=> "flash_#{key}"}
+      = value
 }
 
 file 'app/controllers/application_controller.rb',
@@ -342,20 +337,21 @@ file 'app/controllers/user_sessions_controller.rb',
 end
 }
 
-file 'app/views/user_sessions/new.html.erb',
-%q{<% page_title 'Login' -%>
-<h1>Login</h1>
+file 'app/views/user_sessions/new.html.haml',
+%q{- page_title 'Login'
+%h1 Login
 
-<% form_for @user_session do |f| %>
-  <%= f.error_messages %>
-  <%= f.label :login %><br />
-  <%= f.text_field :login %><br />
-  <br />
-  <%= f.label :password %><br />
-  <%= f.password_field :password %><br />
-  <br />
-  <%= f.submit "Login" %>
-<% end %>
+- form_for @user_session do |f|
+  = f.error_messages
+  = f.label :login
+  %br
+  = f.text_field :login
+  %br
+  = f.label :password
+  %br
+  = f.password_field :password
+  %br
+  = f.submit "Login"
 }
 
 file 'lib/authlogic/application_controller_methods.rb',
