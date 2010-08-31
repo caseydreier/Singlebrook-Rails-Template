@@ -52,6 +52,13 @@ initializer 'time_formats.rb',
 end
 }
 
+# Fix known Bug with Rails ~> 2.3.5 and Exception Notifier
+initializer 'exception_notification.rb',
+%q{# Bugfix for exception notifier 2.3.3 and Rails > 2.3.5
+# See: https://rails.lighthouseapp.com/projects/8995/tickets/85-exception_notification-2330-fails-with-rails-235
+ExceptionNotification::Notifier.view_paths = ActionView::Base.process_view_paths(ExceptionNotification::Notifier.view_paths)
+}
+
 # ================
 # = Environments =
 # ================
