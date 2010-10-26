@@ -11,6 +11,8 @@ require 'active_support/core_ext'
 
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
+  g.template_engine :haml
+  g.fixture_replacement :factory_girl, :dir => "test/factories"
 end
 RUBY
 
@@ -105,15 +107,18 @@ with_options :group => :test do |test_env|
   test_env.gem 'cucumber-rails'
 end
 
+# Create directory for Factory Girl
+empty_directory "test/factories"
+
 after_bundler do
   generate "cucumber:install --webrat"
 end
 
 # Pagination
-gem 'will_paginate', :version => "~> 3.0.pre2"
+gem 'will_paginate', :version => "~> 3.0.beta"
 
 # HAML and SASS by default!
-gem 'haml'
+gem 'haml', :version => "~> 3.0.18"
 
 gem 'capistrano'
 gem 'capistrano-ext'
@@ -216,7 +221,7 @@ load 'config/deploy'
 # ==========================
 # = Testing-releated Files =
 # ==========================
-inject_into_file 'test/test_helper.rb', :after => "self.use_transactional_fixtures = true\n" do
+inject_into_file 'test/test_helper.rb', :after => "fixtures :all\n" do
 %q{# This is the opposite of "assert", but it reads a little nicer.
   def deny(*args)
     !assert(args)
@@ -225,13 +230,6 @@ inject_into_file 'test/test_helper.rb', :after => "self.use_transactional_fixtur
   # Asserts a specific layout in a functional test
   def assert_layout(layout)
     assert_equal layout, @response.layout
-  end
-
-  # Assert that a specified route does not exist
-  def assert_not_routing(path, options, defaults={}, extras={}, message=nil)
-    assert_raise ActionController::RoutingError do
-      assert_routing(path, options, defaults, extras, message)
-    end
   end
 }
 end
