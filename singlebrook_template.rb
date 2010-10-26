@@ -70,7 +70,7 @@ END
 # Create Custom Exception for 404s in initializers
 initializer 'custom_exceptions.rb',
 %q{# Custom 404 Error class
-  class Error404 < StandardError; end;
+class Error404 < StandardError; end;
 }
 
 inject_into_file 'app/controllers/application_controller.rb', :after => "protect_from_forgery\n" do 
@@ -102,8 +102,8 @@ with_options :group => :test do |test_env|
   test_env.gem 'factory_girl'
   test_env.gem 'factory_girl_rails'
   test_env.gem 'mocha'
-  test_env.gem 'webrat'
-  test_env.gem 'cucumber', :version => ">= 0.9.3"
+  test_env.gem 'capybara', :version => "~> 0.4.0"
+  test_env.gem 'cucumber', :version => "~> 0.9.3"
   test_env.gem 'cucumber-rails'
 end
 
@@ -111,7 +111,7 @@ end
 empty_directory "test/factories"
 
 after_bundler do
-  generate "cucumber:install --webrat"
+  generate "cucumber:install --testunit --capybara"
 end
 
 # Pagination
