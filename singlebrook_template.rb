@@ -105,6 +105,7 @@ with_options :group => :test do |test_env|
   test_env.gem 'capybara', :version => "~> 0.4.0"
   test_env.gem 'cucumber', :version => "~> 0.9.3"
   test_env.gem 'cucumber-rails'
+  test_env.gem 'redgreen'
 end
 
 # Create directory for Factory Girl
