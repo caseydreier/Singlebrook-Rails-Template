@@ -1,6 +1,7 @@
 # Singlebrook Rails Template
 # v 0.2.0 by Casey Dreier
-# based on a scaffold from http://railswizard.org/
+# For use with Rails 3.0.x
+# Based on an initial scaffold from http://railswizard.org/
 
 # =================
 # = Initial Setup =
