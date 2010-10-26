@@ -13,16 +13,6 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-template = {"authentication"     =>"devise", 
-            "templating"         =>"haml",
-            "unit_testing"       =>"test_unit",
-            "css"                =>"sass",
-            "javascript"         =>"jquery",
-            "integration_testing"=>"cucumber",
-            "orm"                =>"activerecord-1"}
-  
-recipes = template.values.flatten
-
 def say_recipe(name); say "\033[36m" + "recipe".rjust(10) + "\033[0m" + "    Running #{name} recipe..." end
 def say_wizard(text); say "\033[36m" + "wizard".rjust(10) + "\033[0m" + "    #{text}" end
 
