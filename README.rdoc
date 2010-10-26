@@ -12,11 +12,11 @@ What it does is the following:
 * Creates an initializer to define a custom Error404 class and define a rescue_from() routine in the ApplicationController
 * Adds exception notifier plugin and creates an initializer.
 * Adds Rails 3-compatible will_paginate gem.
-* Adds gems for testing: Factory Girl, Mocha, Cucumber, and Webrat
-* Adds gem for HAML and uses HAML for views
-* Creates a Capistrano scaffold for staging and production
+* Adds gems for testing: Factory Girl, Mocha, Cucumber, and Capybara.
+* Adds gem for HAML and uses HAML for views and SCSS for styles.
+* Creates a Capistrano scaffold for staging and production.
 * Utilizes the Nifty Generators gem to define an application layout and SCSS stylesheet.
-* Runs bundler
+* Runs bundler.
 
 This templates assumes you have the following components setup in your system:
 
