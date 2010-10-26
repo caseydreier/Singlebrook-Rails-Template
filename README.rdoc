@@ -2,7 +2,7 @@
 
 To use this Rails project template, go to a directory in which you'd like to make a new Rails 3.x app, and then:
 
-  rails new my_app_name -m http://github.com/daphonz/Singlebrook-Rails-Template/raw/master/singlebrook_template.rb
+  rails new my_app_name -m http://github.com/daphonz/Singlebrook-Rails-Template/raw/rails3/singlebrook_template.rb
 
 What it does is the following:
 
