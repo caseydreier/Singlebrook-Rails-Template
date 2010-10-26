@@ -1,33 +1,24 @@
 ==Singlebrook Rails Template
 
-To use this Rails project template, go to a directory in which you'd like to make a new Rails 2.3.x app, and then:
+To use this Rails project template, go to a directory in which you'd like to make a new Rails 3.x app, and then:
 
-  rails my_app_name -m http://github.com/daphonz/Singlebrook-Rails-Template/raw/master/singlebrook_template.rb
+  rails new my_app_name -m http://github.com/daphonz/Singlebrook-Rails-Template/raw/master/singlebrook_template.rb
 
 What it does is the following:
 
 * Removes index.html, generic README, and a few other standard files
-* Removes prototype and downloads JQuery 1.4.2
-* Copy database.yml => databse.yml.example
-* Generates .gitignore for files that don't need to be versioned
-* Creates three initializers, one for a custom Error404 message that is caught in the controller, and the other for some default date display settings, and one to fix a bug with Exception Notifier.
-* Adds a line to development.rb env so it will always echo back the ActiveRecord log to STDOUT
-* Adds exception notifier and will_paginate gems
-* Adds gems for testing: Factory Girl and Mocha
-* Adds gem for Authlogic
+* Removes prototype and downloads JQuery 1.4.3 and the rails.js JQuery interface
+* Initializes a new Git repository and commits all generated code.
+* Creates an initializer to define a custom Error404 class and define a rescue_from() routine in the ApplicationController
+* Adds exception notifier plugin and creates an initializer.
+* Adds Rails 3-compatible will_paginate gem.
+* Adds gems for testing: Factory Girl, Mocha, Cucumber, and Webrat
 * Adds gem for HAML and uses HAML for views
-* Downloads the JRails and Validates Timeliness plugins
 * Creates a Capistrano scaffold for staging and production
-* Adds layout helper methods for adding JS and CSS files to the header, and adds a page_title() method.
-* Adds a content area to the header for the application.html.haml
-* Adds Authlogic controller methods
-* Generates a UserSessions controller and view
-* Generates User model and a migration with all the authlogic magic fields
-* Loads gems (asks first)
-* Executes migrations (asks first)
+* Utilizes the Nifty Generators gem to define an application layout and SCSS stylesheet.
+* Runs bundler
 
 This templates assumes you have the following components setup in your system:
 
-* Capistrano
-* Capistrano Multideployment Gem
 * Git
+* Bundler >= 1.0
