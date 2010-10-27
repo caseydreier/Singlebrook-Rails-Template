@@ -11,7 +11,9 @@ require 'active_support/core_ext'
 
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
+  g.stylesheets false
   g.template_engine :haml
+  g.test_framework :test_unit, :fixture_replacement => :factory_girl
   g.fixture_replacement :factory_girl, :dir => "test/factories"
 end
 RUBY
@@ -124,9 +126,13 @@ gem 'haml', :version => "~> 3.0.18"
 gem 'capistrano'
 gem 'capistrano-ext'
 
-# Development Helper for Nicer Scaffolds
+# Development Env Gems: Nifty Scaffold for Nicer Scaffolds,
+# Rails3 Generators, so we can generate test factories instead of fixtures.
+# Haml-Rails, so we can generate scaffolds with HAML.
 with_options :group => :development do |dev_env|
   dev_env.gem "nifty-generators"
+  dev_env.gem "rails3-generators"
+  dev_env.gem "haml-rails"
 end
 
 # Build layout helpers

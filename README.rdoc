@@ -10,9 +10,11 @@ What it does is the following:
 * Removes prototype and downloads JQuery 1.4.3 and the rails.js JQuery interface
 * Initializes a new Git repository and commits all generated code.
 * Creates an initializer to define a custom Error404 class and define a rescue_from() routine in the ApplicationController
-* Adds exception notifier plugin and creates an initializer.
+* Adds exception notifier plugin and creates an initializer with default settings.
 * Adds Rails 3-compatible will_paginate gem.
 * Adds gems for testing: Factory Girl, Mocha, Cucumber, and Capybara.
+* Adds redgreen gem for pretty Test::Unit console output.
+* Configures generators to generate HAML views and test factories instead of ERB and fixtures.
 * Adds gem for HAML and uses HAML for views and SCSS for styles.
 * Creates a Capistrano scaffold for staging and production.
 * Utilizes the Nifty Generators gem to define an application layout and SCSS stylesheet.
