@@ -1,5 +1,5 @@
 # Singlebrook Rails Template
-# v 0.2.0 by Casey Dreier
+# v 0.2.1 by Casey Dreier
 # For use with Rails 3.0.x
 # Based on an initial scaffold from http://railswizard.org/
 
@@ -99,48 +99,52 @@ end
 # ========
 say_wizard 'Creating Gemfile'
 
-# Testing-related
-with_options :group => :test do |test_env|
-  test_env.gem 'factory_girl'
-  test_env.gem 'factory_girl_rails'
-  test_env.gem 'mocha'
-  test_env.gem 'capybara', :version => "~> 0.4.0"
-  test_env.gem 'cucumber', :version => "~> 0.9.3"
-  test_env.gem 'cucumber-rails'
-  test_env.gem 'redgreen'
+# Just append the Gemfile so we can generate nicer-looking code by using
+# blocks for environment grouping.
+append_file 'Gemfile' do <<-END
+
+gem "will_paginate", "~> 3.0.beta"
+gem "haml", "~> 3.0.21"
+gem "capistrano"
+gem "capistrano-ext"
+gem "devise", '~> 1.1'
+gem "cancan", '~> 1.4'
+gem "hpricot"
+gem "ruby_parser"
+
+group :test do
+  gem "factory_girl"
+  gem "factory_girl_rails"
+  gem "mocha"
+  gem "capybara", '~> 0.4.0'
+  gem "cucumber", "~> 0.9.3"
+  gem "cucumber-rails"
+  gem "redgreen"
+end
+
+group :development do
+  gem "nifty-generators"
+  gem "rails3-generators"
+  gem "haml-rails"
+end
+END
 end
 
 # Create directory for Factory Girl
 empty_directory "test/factories"
 
+# Configure Cucumber at the end of the setup process.
+# Use good ol' test/unit as our testing framework.
 after_bundler do
   generate "cucumber:install --testunit --capybara"
 end
 
-# Pagination
-gem 'will_paginate', :version => "~> 3.0.beta"
-
-# HAML and SASS by default!
-gem 'haml', :version => "~> 3.0.18"
-
-gem 'capistrano'
-gem 'capistrano-ext'
-
-# Development Env Gems: Nifty Scaffold for Nicer Scaffolds,
-# Rails3 Generators, so we can generate test factories instead of fixtures.
-# Haml-Rails, so we can generate scaffolds with HAML.
-with_options :group => :development do |dev_env|
-  dev_env.gem "nifty-generators"
-  dev_env.gem "rails3-generators"
-  dev_env.gem "haml-rails"
-end
-
-# Build layout helpers
+# Build layout helpers and initial application stylesheet.
 after_bundler do
-  generate "nifty:layout --haml"
+  generate "bundle exec nifty:layout --haml"
   # Nifty Generators creates a SASS file by default.  Convert that to SCSS.
   in_root {
-    run "sass-convert --from sass2 --to scss --recursive public/stylesheets/sass/"
+    run "bundle exec sass-convert --from sass2 --to scss --recursive public/stylesheets/sass/"
     run "rm public/stylesheets/sass/*.sass"
   }
 end
