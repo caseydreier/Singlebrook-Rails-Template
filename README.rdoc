@@ -2,16 +2,16 @@
 
 To use this Rails project template, go to a directory in which you'd like to make a new Rails 3.x app, and then:
 
-  rails new my_app_name -m http://github.com/daphonz/Singlebrook-Rails-Template/raw/master/singlebrook_template.rb
+  rails new my_app_name -m https://github.com/daphonz/Singlebrook-Rails-Template/raw/master/singlebrook_template.rb
 
 What it does is the following:
 
-* Removes index.html, generic README, and a few other standard files
-* Removes prototype and downloads JQuery 1.4.3 and the rails.js JQuery interface
+* Removes index.html, generic README, and a few other standard files.
+* Removes prototype and downloads JQuery 1.5.1 and the rails.js JQuery interface.
 * Initializes a new Git repository and commits all generated code.
 * Creates an initializer to define a custom Error404 class and define a rescue_from() routine in the ApplicationController
 * Adds exception notifier plugin and creates an initializer with default settings.
-* Adds Rails 3-compatible will_paginate gem.
+* Adds pagination gem Kaminari.
 * Adds gems for testing: Factory Girl, Mocha, Cucumber, and Capybara.
 * Adds redgreen gem for pretty Test::Unit console output.
 * Configures generators to generate HAML views and test factories instead of ERB and fixtures.
@@ -29,4 +29,4 @@ This templates assumes you have the following components setup in your system:
 
 The old application template for Rails 2.3.x is still available. Example usage:
 
-  rails my_app_name -m http://github.com/daphonz/Singlebrook-Rails-Template/raw/rails2.3/singlebrook_template.rb
+  rails my_app_name -m https://github.com/daphonz/Singlebrook-Rails-Template/raw/rails2.3/singlebrook_template.rb

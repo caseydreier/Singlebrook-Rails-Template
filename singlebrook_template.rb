@@ -33,21 +33,6 @@ run "rm public/robots.txt"
 run "rm public/images/rails.png"
 run "rm app/views/layouts/*.erb"
 
-# remove prototype js
-run "rm -f public/javascripts/*"
-
-# Adds the latest jQuery and Rails UJS helpers for jQuery.
-say_recipe 'jQuery'
-
-inside "public/javascripts" do
-  get "http://github.com/rails/jquery-ujs/raw/master/src/rails.js", "rails.js"
-  get "http://code.jquery.com/jquery-1.4.3.min.js",                 "jquery.min.js"
-end
-
-application do
-  "\n    config.action_view.javascript_expansions[:defaults] = %w(jquery.min rails)\n"
-end
-
 gsub_file "config/application.rb", /# JavaScript.*\n/, ""
 gsub_file "config/application.rb", /# config\.action_view\.javascript.*\n/, ""
 
@@ -64,6 +49,14 @@ config/database.yml
 tmp/restart.txt
 END
 
+# ===========
+# = Plugins =
+# ===========
+
+# Exception Handling
+after_bundler do
+  plugin 'exception_notification', :git => "git://github.com/smartinez87/exception_notification.git"
+end
 
 # ================
 # = Initializers =
@@ -103,22 +96,22 @@ say_wizard 'Creating Gemfile'
 # blocks for environment grouping.
 append_file 'Gemfile' do <<-END
 
-gem "will_paginate", "~> 3.0.beta"
-gem "haml", "~> 3.0.21"
-gem "capistrano"
-gem "capistrano-ext"
-gem "devise", '~> 1.1'
-gem "cancan", '~> 1.4'
+gem 'kaminari'
+gem "haml", "~> 3.0.25"
+gem "devise", '~> 1.1.8'
+gem "cancan", '~> 1.6.2'
 gem "hpricot"
 gem "ruby_parser"
+gem "jquery-rails"
+gem 'sqlite3-ruby', :require => 'sqlite3'
 
 group :test do
   gem "factory_girl"
   gem "factory_girl_rails"
-  gem "mocha"
-  gem "capybara", '~> 0.4.0'
-  gem "cucumber", "~> 0.9.3"
-  gem "cucumber-rails"
+  gem "mocha", :require => false
+  gem "capybara", '~> 0.4.1'
+  gem "cucumber", "~> 0.10.2"
+  gem "cucumber-rails", '~> 0.4.0'
   gem "redgreen"
 end
 
@@ -126,6 +119,8 @@ group :development do
   gem "nifty-generators"
   gem "rails3-generators"
   gem "haml-rails"
+  gem "capistrano"
+  gem "capistrano-ext"
 end
 END
 end
@@ -133,10 +128,11 @@ end
 # Create directory for Factory Girl
 empty_directory "test/factories"
 
-# Configure Cucumber at the end of the setup process.
+# Configure Cucumber at the end of the setup process and install JQuery.
 # Use good ol' test/unit as our testing framework.
 after_bundler do
   generate "cucumber:install --testunit --capybara"
+  generate "jquery:install --version 1.5.1"
 end
 
 # Build layout helpers and initial application stylesheet.
@@ -148,13 +144,6 @@ after_bundler do
     run "rm public/stylesheets/sass/*.sass"
   }
 end
-
-# ===========
-# = Plugins =
-# ===========
-
-# Exception Handling
-plugin 'exception_notification', :git => "git://github.com/rails/exception_notification.git"
 
 initializer 'exception_notification.rb',<<-END
 #{app_const_base.to_s}::Application.config.middleware.use ExceptionNotifier,
@@ -233,22 +222,19 @@ load 'config/deploy'
 # = Testing-releated Files =
 # ==========================
 inject_into_file 'test/test_helper.rb', :after => "fixtures :all\n" do
-%q{# This is the opposite of "assert", but it reads a little nicer.
-  def deny(*args)
-    !assert(args)
-  end
-
-  # Asserts a specific layout in a functional test
+%q{# Asserts a specific layout in a functional test
   def assert_layout(layout)
     assert_equal layout, @response.layout
   end
 }
 end
 
-say_wizard "Running Bundler install. This will take a while."
-run 'bundle install'
-say_wizard "Running after Bundler callbacks."
-@after_blocks.each{|b| b.call}
+if yes?("Run Bundler? (yes/no)")
+  say_wizard "Running Bundler install. This will take a while."
+  run 'bundle install'
+  say_wizard "Running after Bundler callbacks."
+  @after_blocks.each{|b| b.call}
+end
 
 # Initial Git Commit
 say_wizard "Commiting files into Git."
